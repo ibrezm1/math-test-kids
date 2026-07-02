@@ -1088,12 +1088,34 @@ body {
     animation: stampIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
-.teacher-grade-circle span#final-percentage-grade {
-    font-size: 2.2rem;
+.teacher-grade-fraction {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 0.95;
+    margin-top: 10px;
+}
+
+.teacher-grade-fraction #final-numerator {
+    font-size: 2.1rem;
     font-weight: 900;
-    line-height: 1;
     font-family: 'Outfit', sans-serif;
-    letter-spacing: -1px;
+    line-height: 0.9;
+}
+
+.teacher-grade-fraction .fraction-line {
+    width: 60px;
+    border: none;
+    border-top: 3px solid var(--accent-error);
+    margin: 4px 0;
+}
+
+.teacher-grade-fraction #final-denominator {
+    font-size: 1.7rem;
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
+    line-height: 0.9;
 }
 
 .teacher-grade-circle .grade-label {

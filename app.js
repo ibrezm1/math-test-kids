@@ -346,7 +346,8 @@ const DOM = {
     paperTotalQuestions: document.getElementById('paper-total-questions'),
     paperCorrectAnswers: document.getElementById('paper-correct-answers'),
     paperTimeTaken: document.getElementById('paper-time-taken'),
-    finalPercentageGrade: document.getElementById('final-percentage-grade'),
+    finalNumerator: document.getElementById('final-numerator'),
+    finalDenominator: document.getElementById('final-denominator'),
     finalGradeFeedback: document.getElementById('final-grade-feedback'),
     gradeKidsFormatDesc: document.getElementById('grade-kids-format-desc'),
     paperQuestionProgress: document.getElementById('paper-question-progress'),
@@ -781,7 +782,8 @@ function showPaperResults() {
     DOM.paperCorrectAnswers.innerText = correct;
     DOM.paperTimeTaken.innerText = `${timeSpentSec}s`;
     
-    DOM.finalPercentageGrade.innerText = `${percentage}/100`;
+    DOM.finalNumerator.innerText = percentage;
+    DOM.finalDenominator.innerText = "100";
     DOM.gradeKidsFormatDesc.innerText = `You got ${percentage} by 100 correct!`;
     
     let feedback = "";
