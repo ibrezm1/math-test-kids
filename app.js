@@ -296,6 +296,9 @@ const DOM = {
     scoreFraction: document.getElementById('score-fraction'),
     
     hamburgerMenuBtn: document.getElementById('hamburger-menu-btn'),
+    pauseGameBtn: document.getElementById('pause-game-btn'),
+    pauseOverlay: document.getElementById('pause-overlay'),
+    resumeGameBtn: document.getElementById('resume-game-btn'),
     closeSettingsBtn: document.getElementById('close-settings-btn'),
     settingsOverlay: document.getElementById('settings-overlay'),
     
@@ -583,7 +586,22 @@ function updateAnswerPreview() {
 }
 
 // --- Gameplay Flow ---
+function pauseGame() {
+    if (state.current.isTransitioning) return;
+    clearInterval(state.current.timer);
+    voice.cancel();
+    DOM.pauseOverlay.classList.add('active');
+    DOM.pauseGameBtn.classList.add('hidden');
+}
+
+function resumeGame() {
+    DOM.pauseOverlay.classList.remove('active');
+    DOM.pauseGameBtn.classList.remove('hidden');
+    startTimer(true);
+}
+
 function initPaperSession() {
+    DOM.pauseGameBtn.classList.remove('hidden');
     const len = state.settings.paperLength;
     if (len > 0) {
         state.paper.active = true;
@@ -627,6 +645,7 @@ function advancePaperQuestion() {
 function showPaperResults() {
     clearInterval(state.current.timer);
     voice.cancel();
+    DOM.pauseGameBtn.classList.add('hidden');
     
     const correct = state.paper.correctCount;
     const total = state.settings.paperLength;
@@ -670,18 +689,27 @@ function startNextQuestion() {
 }
 
 // --- Timer System ---
-function startTimer() {
+function startTimer(resume = false) {
     clearInterval(state.current.timer);
     
     const duration = state.settings.duration;
-    state.current.timeRemaining = duration;
+    if (!resume) {
+        state.current.timeRemaining = duration;
+    }
     
     updateTimerUI();
     
-    // Play initial voice prompt for values > 10 if on boundary
-    playCountdownVoice(duration, duration);
+    if (!resume) {
+        playCountdownVoice(duration, duration);
+    } else {
+        playCountdownVoice(state.current.timeRemaining, duration);
+    }
 
-    DOM.questionCard.querySelector('.timer-wrapper').classList.remove('warning');
+    if (state.current.timeRemaining <= 3) {
+        DOM.questionCard.querySelector('.timer-wrapper').classList.add('warning');
+    } else {
+        DOM.questionCard.querySelector('.timer-wrapper').classList.remove('warning');
+    }
 
     state.current.timer = setInterval(() => {
         state.current.timeRemaining -= 1;
@@ -699,12 +727,11 @@ function startTimer() {
             DOM.questionCard.querySelector('.timer-wrapper').classList.add('warning');
             sounds.playLowTimerTick();
         } else {
+            DOM.questionCard.querySelector('.timer-wrapper').classList.remove('warning');
             sounds.playTick();
         }
 
-        // Handle Speech countdown according to user feedback:
-        // "if more than 10 then do at every 5 second"
-        // Let's implement this clearly:
+        // Handle Speech countdown
         playCountdownVoice(state.current.timeRemaining, duration);
 
     }, 1000);
@@ -856,8 +883,8 @@ function handleInputClear() {
 // --- Keyboard Events Link ---
 function initKeyboardInput() {
     document.addEventListener('keydown', (e) => {
-        // Prevent typing intercept when settings is open
-        if (DOM.settingsOverlay.classList.contains('active')) return;
+        // Prevent typing intercept when settings or pause is open
+        if (DOM.settingsOverlay.classList.contains('active') || DOM.pauseOverlay.classList.contains('active')) return;
         
         if (e.key >= '0' && e.key <= '9') {
             handleInputDigit(e.key);
@@ -880,6 +907,16 @@ function initEventListeners() {
         DOM.welcomeOverlay.classList.remove('active');
         initPaperSession();
         startNextQuestion();
+    });
+    
+    DOM.pauseGameBtn.addEventListener('click', () => {
+        sounds.init();
+        pauseGame();
+    });
+    
+    DOM.resumeGameBtn.addEventListener('click', () => {
+        sounds.init();
+        resumeGame();
     });
     
     // On-screen Keypad click events (uses delegation)
