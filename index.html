@@ -86,7 +86,7 @@
             </div>
 
             <!-- Custom Input Keypad -->
-            <div class="keypad-container">
+            <div id="keypad-container" class="keypad-container">
                 <div class="keypad-grid">
                     <button class="key-btn" data-val="7">7</button>
                     <button class="key-btn" data-val="8">8</button>
@@ -111,6 +111,16 @@
                     <span>Submit</span>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><polyline points="20 6 9 17 4 12"/></svg>
                 </button>
+            </div>
+
+            <!-- Multiple Choice Options (Visible in MCQ Mode) -->
+            <div id="mcq-container" class="mcq-container hidden">
+                <div class="mcq-grid">
+                    <button class="mcq-btn" id="mcq-btn-0" data-idx="0">--</button>
+                    <button class="mcq-btn" id="mcq-btn-1" data-idx="1">--</button>
+                    <button class="mcq-btn" id="mcq-btn-2" data-idx="2">--</button>
+                    <button class="mcq-btn" id="mcq-btn-3" data-idx="3">--</button>
+                </div>
             </div>
         </main>
         
@@ -244,6 +254,14 @@
                                 <input type="checkbox" id="setting-sfx-enabled" checked>
                                 <span class="switch-slider"></span>
                                 <span>Enable Sound Effects</span>
+                            </label>
+                        </div>
+
+                        <div class="setting-item-inline">
+                            <label class="switch-container">
+                                <input type="checkbox" id="setting-mcq-enabled">
+                                <span class="switch-slider"></span>
+                                <span>Multiple Choice Mode (4 Options)</span>
                             </label>
                         </div>
                     </section>

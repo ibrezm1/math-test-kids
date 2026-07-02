@@ -257,7 +257,8 @@ const state = {
         duration: 10,
         voiceEnabled: true,
         sfxEnabled: true,
-        paperLength: 10
+        paperLength: 10,
+        mcqEnabled: false
     },
     
     // Paper tracking state
@@ -285,7 +286,8 @@ const state = {
         userInput: '',
         timer: null,
         timeRemaining: 0,
-        isTransitioning: false // prevents double submissions during animations
+        isTransitioning: false, // prevents double submissions during animations
+        mcqOptions: [] // holds shuffled options
     }
 };
 
@@ -350,7 +352,18 @@ const DOM = {
     paperQuestionProgress: document.getElementById('paper-question-progress'),
     paperQuestionCount: document.getElementById('paper-question-count'),
     paperMarksProgress: document.getElementById('paper-marks-progress'),
-    paperMarksValue: document.getElementById('paper-marks-value')
+    paperMarksValue: document.getElementById('paper-marks-value'),
+    
+    // MCQ mode elements
+    mcqContainer: document.getElementById('mcq-container'),
+    keypadContainer: document.getElementById('keypad-container'),
+    mcqEnabledCheckbox: document.getElementById('setting-mcq-enabled'),
+    mcqBtns: [
+        document.getElementById('mcq-btn-0'),
+        document.getElementById('mcq-btn-1'),
+        document.getElementById('mcq-btn-2'),
+        document.getElementById('mcq-btn-3')
+    ]
 };
 
 // SVG Circle circumference details
@@ -367,6 +380,9 @@ function loadSettings() {
             }
             if (state.settings.sfxEnabled === undefined) {
                 state.settings.sfxEnabled = true;
+            }
+            if (state.settings.mcqEnabled === undefined) {
+                state.settings.mcqEnabled = false;
             }
         } catch (e) {
             console.error("Error parsing saved settings", e);
@@ -388,6 +404,7 @@ function loadSettings() {
     
     updateStatsDisplay();
     populateSettingsForm();
+    toggleMCQVisibility();
 }
 
 function saveSettings() {
@@ -429,6 +446,7 @@ function populateSettingsForm() {
     DOM.voiceEnabledCheckbox.checked = state.settings.voiceEnabled;
     DOM.sfxEnabledCheckbox.checked = state.settings.sfxEnabled;
     DOM.paperLength.value = state.settings.paperLength;
+    DOM.mcqEnabledCheckbox.checked = state.settings.mcqEnabled;
 }
 
 // --- Question Generator ---
@@ -572,16 +590,56 @@ function generateQuestion() {
     DOM.eqNum2.innerText = num2;
     DOM.eqOp.innerText = operator === '/' ? '÷' : (operator === 'x' ? '×' : operator);
     
+    if (state.settings.mcqEnabled) {
+        const mcqOptions = generateMCQOptions(answer);
+        state.current.mcqOptions = mcqOptions;
+        for (let i = 0; i < 4; i++) {
+            DOM.mcqBtns[i].innerText = mcqOptions[i];
+        }
+    }
+    
     updateAnswerPreview();
 }
 
+function generateMCQOptions(correctAnswer) {
+    const options = new Set();
+    options.add(correctAnswer);
+    
+    let attempts = 0;
+    while (options.size < 4 && attempts < 100) {
+        attempts++;
+        const offset = Math.floor(Math.random() * 9) - 4; // -4 to 4
+        if (offset === 0) continue;
+        const option = correctAnswer + offset;
+        if (option >= 0) {
+            options.add(option);
+        }
+    }
+    
+    if (options.size < 4) {
+        let backup = correctAnswer + 1;
+        while (options.size < 4) {
+            options.add(backup);
+            backup++;
+        }
+    }
+    
+    const arr = Array.from(options);
+    return arr.sort(() => Math.random() - 0.5);
+}
+
 function updateAnswerPreview() {
-    if (state.current.userInput === '') {
-        DOM.answerPreview.innerText = "Type Answer";
+    if (state.settings.mcqEnabled) {
+        DOM.answerPreview.innerText = "Select Option";
         DOM.answerPreview.classList.add('placeholder');
     } else {
-        DOM.answerPreview.innerText = state.current.userInput;
-        DOM.answerPreview.classList.remove('placeholder');
+        if (state.current.userInput === '') {
+            DOM.answerPreview.innerText = "Type Answer";
+            DOM.answerPreview.classList.add('placeholder');
+        } else {
+            DOM.answerPreview.innerText = state.current.userInput;
+            DOM.answerPreview.classList.remove('placeholder');
+        }
     }
 }
 
@@ -600,8 +658,72 @@ function resumeGame() {
     startTimer(true);
 }
 
+function toggleMCQVisibility() {
+    const isMcq = state.settings.mcqEnabled;
+    if (isMcq) {
+        DOM.mcqContainer.classList.remove('hidden');
+        DOM.keypadContainer.classList.add('hidden');
+    } else {
+        DOM.mcqContainer.classList.add('hidden');
+        DOM.keypadContainer.classList.remove('hidden');
+    }
+}
+
+function submitMCQAnswer(userVal) {
+    if (state.current.isTransitioning) return;
+    
+    state.current.isTransitioning = true;
+    clearInterval(state.current.timer);
+    voice.cancel();
+    
+    const isCorrect = userVal === state.current.answer;
+    
+    if (isCorrect) {
+        sounds.playCorrect();
+        triggerConfetti();
+        DOM.questionCard.classList.add('correct');
+        
+        DOM.answerPreview.innerText = userVal;
+        DOM.answerPreview.classList.remove('placeholder');
+        
+        state.stats.streak += 1;
+        if (state.stats.streak > state.stats.bestStreak) {
+            state.stats.bestStreak = state.stats.streak;
+        }
+        state.stats.correct += 1;
+        state.stats.total += 1;
+        
+        state.paper.correctCount += 1;
+        saveStats();
+        updateStatsDisplay();
+        updateLiveMarks();
+        
+        setTimeout(() => {
+            advancePaperQuestion();
+        }, 800);
+    } else {
+        sounds.playIncorrect();
+        DOM.questionCard.classList.add('incorrect');
+        
+        DOM.answerPreview.innerText = `${userVal} ➔ ${state.current.answer}`;
+        DOM.answerPreview.classList.remove('placeholder');
+        
+        state.stats.streak = 0;
+        state.stats.total += 1;
+        
+        saveStats();
+        updateStatsDisplay();
+        updateLiveMarks();
+        
+        setTimeout(() => {
+            advancePaperQuestion();
+        }, 1800);
+    }
+}
+
 function initPaperSession() {
     DOM.pauseGameBtn.classList.remove('hidden');
+    toggleMCQVisibility();
     const len = state.settings.paperLength;
     if (len > 0) {
         state.paper.active = true;
@@ -919,6 +1041,17 @@ function initEventListeners() {
         resumeGame();
     });
     
+    // Multiple Choice button click events (uses delegation)
+    DOM.mcqContainer.addEventListener('click', (e) => {
+        const btn = e.target.closest('.mcq-btn');
+        if (!btn || state.current.isTransitioning) return;
+        
+        sounds.init();
+        const idx = parseInt(btn.getAttribute('data-idx'));
+        const selectedValue = state.current.mcqOptions[idx];
+        submitMCQAnswer(selectedValue);
+    });
+    
     // On-screen Keypad click events (uses delegation)
     document.querySelector('.keypad-grid').addEventListener('click', (e) => {
         const btn = e.target.closest('.key-btn');
@@ -989,12 +1122,14 @@ function initEventListeners() {
         state.settings.voiceEnabled = DOM.voiceEnabledCheckbox.checked;
         state.settings.sfxEnabled = DOM.sfxEnabledCheckbox.checked;
         state.settings.paperLength = parseInt(DOM.paperLength.value) || 0;
+        state.settings.mcqEnabled = DOM.mcqEnabledCheckbox.checked;
         
         // Sync instances
         voice.enabled = state.settings.voiceEnabled;
         sounds.muted = !state.settings.sfxEnabled;
         
         saveSettings();
+        toggleMCQVisibility();
         
         DOM.settingsOverlay.classList.remove('active');
         
