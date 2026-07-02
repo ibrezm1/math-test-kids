@@ -590,6 +590,8 @@ function generateQuestion() {
     DOM.eqNum2.innerText = num2;
     DOM.eqOp.innerText = operator === '/' ? '÷' : (operator === 'x' ? '×' : operator);
     
+    toggleMCQVisibility();
+    
     if (state.settings.mcqEnabled) {
         const mcqOptions = generateMCQOptions(answer);
         state.current.mcqOptions = mcqOptions;
