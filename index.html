@@ -37,20 +37,8 @@
             </div>
 
             <div class="header-controls">
-                <button id="toggle-sfx-btn" class="icon-btn" aria-label="Toggle Sound Effects">
-                    <!-- Audio On SVG -->
-                    <svg id="sfx-on-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-volume-2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
-                    <!-- Audio Off SVG (hidden by default) -->
-                    <svg id="sfx-off-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-volume-x"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="22" x2="16" y1="9" y2="15"/><line x1="16" x2="22" y1="9" y2="15"/></svg>
-                </button>
-                <button id="toggle-voice-btn" class="icon-btn" aria-label="Toggle Voice Countdown">
-                    <!-- Voice On SVG -->
-                    <svg id="voice-on-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mic"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-                    <!-- Voice Off SVG (hidden by default) -->
-                    <svg id="voice-off-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mic-off"><line x1="2" x2="22" y1="2" y2="22"/><path d="M18.89 13.15a7.19 7.19 0 0 0-.89-2.15"/><path d="M15 9.34V5a3 3 0 0 0-5.68-1.35"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12"/><path d="M19 10v1a7.93 7.93 0 0 1-1.21 4.22"/><path d="M12 19v3"/><path d="M5 10v1a7.75 7.75 0 0 0 1.57 4.75"/></svg>
-                </button>
-                <button id="open-settings-btn" class="icon-btn" aria-label="Settings">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                <button id="hamburger-menu-btn" class="icon-btn" aria-label="Open Menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="3" x2="21" y1="12" y2="12"/><line x1="3" x2="21" y1="6" y2="6"/><line x1="3" x2="21" y1="18" y2="18"/></svg>
                 </button>
             </div>
         </header>
@@ -245,6 +233,14 @@
                                 <input type="checkbox" id="setting-voice-enabled" checked>
                                 <span class="switch-slider"></span>
                                 <span>Enable Voice Countdown</span>
+                            </label>
+                        </div>
+
+                        <div class="setting-item-inline">
+                            <label class="switch-container">
+                                <input type="checkbox" id="setting-sfx-enabled" checked>
+                                <span class="switch-slider"></span>
+                                <span>Enable Sound Effects</span>
                             </label>
                         </div>
                     </section>

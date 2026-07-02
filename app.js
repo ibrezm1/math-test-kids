@@ -295,15 +295,7 @@ const DOM = {
     bestStreak: document.getElementById('best-streak'),
     scoreFraction: document.getElementById('score-fraction'),
     
-    toggleSfxBtn: document.getElementById('toggle-sfx-btn'),
-    sfxOnIcon: document.getElementById('sfx-on-icon'),
-    sfxOffIcon: document.getElementById('sfx-off-icon'),
-    
-    toggleVoiceBtn: document.getElementById('toggle-voice-btn'),
-    voiceOnIcon: document.getElementById('voice-on-icon'),
-    voiceOffIcon: document.getElementById('voice-off-icon'),
-    
-    openSettingsBtn: document.getElementById('open-settings-btn'),
+    hamburgerMenuBtn: document.getElementById('hamburger-menu-btn'),
     closeSettingsBtn: document.getElementById('close-settings-btn'),
     settingsOverlay: document.getElementById('settings-overlay'),
     
@@ -336,6 +328,7 @@ const DOM = {
     
     timerDuration: document.getElementById('setting-timer-duration'),
     voiceEnabledCheckbox: document.getElementById('setting-voice-enabled'),
+    sfxEnabledCheckbox: document.getElementById('setting-sfx-enabled'),
     
     resetStatsBtn: document.getElementById('reset-stats-btn'),
     saveSettingsBtn: document.getElementById('save-settings-btn'),
@@ -369,6 +362,9 @@ function loadSettings() {
             if (state.settings.paperLength === undefined) {
                 state.settings.paperLength = 10;
             }
+            if (state.settings.sfxEnabled === undefined) {
+                state.settings.sfxEnabled = true;
+            }
         } catch (e) {
             console.error("Error parsing saved settings", e);
         }
@@ -387,7 +383,6 @@ function loadSettings() {
     sounds.muted = !state.settings.sfxEnabled;
     voice.enabled = state.settings.voiceEnabled;
     
-    updateHeaderControlsUI();
     updateStatsDisplay();
     populateSettingsForm();
 }
@@ -398,24 +393,6 @@ function saveSettings() {
 
 function saveStats() {
     localStorage.setItem('match_timer_stats', JSON.stringify(state.stats));
-}
-
-function updateHeaderControlsUI() {
-    if (sounds.muted) {
-        DOM.sfxOnIcon.classList.add('hidden');
-        DOM.sfxOffIcon.classList.remove('hidden');
-    } else {
-        DOM.sfxOnIcon.classList.remove('hidden');
-        DOM.sfxOffIcon.classList.add('hidden');
-    }
-
-    if (voice.enabled) {
-        DOM.voiceOnIcon.classList.remove('hidden');
-        DOM.voiceOffIcon.classList.add('hidden');
-    } else {
-        DOM.voiceOnIcon.classList.add('hidden');
-        DOM.voiceOffIcon.classList.remove('hidden');
-    }
 }
 
 function updateStatsDisplay() {
@@ -447,6 +424,7 @@ function populateSettingsForm() {
     
     DOM.timerDuration.value = state.settings.duration;
     DOM.voiceEnabledCheckbox.checked = state.settings.voiceEnabled;
+    DOM.sfxEnabledCheckbox.checked = state.settings.sfxEnabled;
     DOM.paperLength.value = state.settings.paperLength;
 }
 
@@ -927,32 +905,8 @@ function initEventListeners() {
         submitAnswer();
     });
 
-    // Mute/Voice toggles in Header
-    DOM.toggleSfxBtn.addEventListener('click', () => {
-        sounds.muted = !sounds.muted;
-        state.settings.sfxEnabled = !sounds.muted;
-        saveSettings();
-        updateHeaderControlsUI();
-        // Play confirming click if now unmuted
-        if (!sounds.muted) {
-            sounds.playTick();
-        }
-    });
-    
-    DOM.toggleVoiceBtn.addEventListener('click', () => {
-        voice.enabled = !voice.enabled;
-        state.settings.voiceEnabled = voice.enabled;
-        saveSettings();
-        updateHeaderControlsUI();
-        if (voice.enabled) {
-            voice.speak("voice enabled");
-        } else {
-            voice.cancel();
-        }
-    });
-
-    // Settings overlay toggle
-    DOM.openSettingsBtn.addEventListener('click', () => {
+    // Settings overlay (Hamburger Menu Drawer) toggle
+    DOM.hamburgerMenuBtn.addEventListener('click', () => {
         clearInterval(state.current.timer);
         voice.cancel();
         populateSettingsForm();
@@ -996,13 +950,14 @@ function initEventListeners() {
         
         state.settings.duration = Math.max(3, parseInt(DOM.timerDuration.value) || 10);
         state.settings.voiceEnabled = DOM.voiceEnabledCheckbox.checked;
+        state.settings.sfxEnabled = DOM.sfxEnabledCheckbox.checked;
         state.settings.paperLength = parseInt(DOM.paperLength.value) || 0;
         
         // Sync instances
         voice.enabled = state.settings.voiceEnabled;
+        sounds.muted = !state.settings.sfxEnabled;
         
         saveSettings();
-        updateHeaderControlsUI();
         
         DOM.settingsOverlay.classList.remove('active');
         
