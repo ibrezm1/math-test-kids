@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Match Timer - Math Practice</title>
+    <meta name="description" content="A beautiful, mobile-friendly math practice game with custom speed timers and voice countdowns.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- CSS Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Dashboard Header -->
+        <header class="app-header">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <h1>Match<span>Timer</span></h1>
+            </div>
+            
+            <div class="stats-container">
+                <div class="stat-box">
+                    <span class="stat-label">Streak</span>
+                    <span id="current-streak" class="stat-value">0</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Best</span>
+                    <span id="best-streak" class="stat-value text-gold">0</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Score</span>
+                    <span id="score-fraction" class="stat-value">0/0</span>
+                </div>
+            </div>
+
+            <div class="header-controls">
+                <button id="toggle-sfx-btn" class="icon-btn" aria-label="Toggle Sound Effects">
+                    <!-- Audio On SVG -->
+                    <svg id="sfx-on-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-volume-2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+                    <!-- Audio Off SVG (hidden by default) -->
+                    <svg id="sfx-off-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-volume-x"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="22" x2="16" y1="9" y2="15"/><line x1="16" x2="22" y1="9" y2="15"/></svg>
+                </button>
+                <button id="toggle-voice-btn" class="icon-btn" aria-label="Toggle Voice Countdown">
+                    <!-- Voice On SVG -->
+                    <svg id="voice-on-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mic"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                    <!-- Voice Off SVG (hidden by default) -->
+                    <svg id="voice-off-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mic-off"><line x1="2" x2="22" y1="2" y2="22"/><path d="M18.89 13.15a7.19 7.19 0 0 0-.89-2.15"/><path d="M15 9.34V5a3 3 0 0 0-5.68-1.35"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12"/><path d="M19 10v1a7.93 7.93 0 0 1-1.21 4.22"/><path d="M12 19v3"/><path d="M5 10v1a7.75 7.75 0 0 0 1.57 4.75"/></svg>
+                </button>
+                <button id="open-settings-btn" class="icon-btn" aria-label="Settings">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Game Area -->
+        <main class="game-area">
+            <!-- Question Card -->
+            <div id="question-card" class="question-card">
+                <!-- Paper Progress & Marks Badges (Visible in Paper Mode) -->
+                <div id="paper-question-progress" class="paper-badge left-badge hidden">
+                    <span class="badge-label">Question</span>
+                    <span id="paper-question-count" class="badge-value">1/10</span>
+                </div>
+                
+                <div id="paper-marks-progress" class="paper-badge right-badge hidden">
+                    <div class="marks-circle">
+                        <span id="paper-marks-value">0/0</span>
+                    </div>
+                </div>
+
+                <!-- Visual Timer Progress -->
+                <div class="timer-wrapper">
+                    <svg class="timer-ring" width="80" height="80">
+                        <circle class="timer-ring-bg" stroke="rgba(255,255,255,0.06)" stroke-width="6" fill="transparent" r="34" cx="40" cy="40"/>
+                        <circle id="timer-ring-bar" class="timer-ring-bar" stroke="var(--accent-primary)" stroke-width="6" fill="transparent" r="34" cx="40" cy="40"/>
+                    </svg>
+                    <span id="timer-text" class="timer-text">10</span>
+                </div>
+
+                <!-- Math Equation -->
+                <div class="equation-display">
+                    <span id="equation-num1">7</span>
+                    <span id="equation-operator">+</span>
+                    <span id="equation-num2">4</span>
+                    <span class="equals">=</span>
+                </div>
+
+                <!-- Live Answer Box -->
+                <div class="answer-display-wrapper">
+                    <div id="answer-preview" class="answer-preview placeholder">Type Answer</div>
+                </div>
+            </div>
+
+            <!-- Custom Input Keypad -->
+            <div class="keypad-container">
+                <div class="keypad-grid">
+                    <button class="key-btn" data-val="7">7</button>
+                    <button class="key-btn" data-val="8">8</button>
+                    <button class="key-btn" data-val="9">9</button>
+                    
+                    <button class="key-btn" data-val="4">4</button>
+                    <button class="key-btn" data-val="5">5</button>
+                    <button class="key-btn" data-val="6">6</button>
+                    
+                    <button class="key-btn" data-val="1">1</button>
+                    <button class="key-btn" data-val="2">2</button>
+                    <button class="key-btn" data-val="3">3</button>
+                    
+                    <button id="key-clear" class="key-btn action-key text-red" aria-label="Clear">C</button>
+                    <button class="key-btn" data-val="0">0</button>
+                    <button id="key-backspace" class="key-btn action-key" aria-label="Backspace">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-delete"><path d="M20 5H9l-7 7 7 7h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Z"/><line x1="18" x2="12" y1="9" y2="15"/><line x1="12" x2="18" y1="9" y2="15"/></svg>
+                    </button>
+                </div>
+                <!-- Prominent Submit Bar -->
+                <button id="key-submit" class="submit-btn" aria-label="Submit Answer">
+                    <span>Submit</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><polyline points="20 6 9 17 4 12"/></svg>
+                </button>
+            </div>
+        </main>
+        
+        <!-- Welcome / Game Start Screen Overlay (Shown on first load / settings reset) -->
+        <div id="welcome-overlay" class="overlay active">
+            <div class="overlay-card glow-card">
+                <h2>Ready to Practice?</h2>
+                <p>Sharpen your math skills against the clock! Correct answers keep your streak alive. Don't let the timer run out!</p>
+                <div class="welcome-buttons">
+                    <button id="start-game-btn" class="primary-btn pulse-glow">Start Practicing</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Configuration Settings Modal Overlay -->
+        <div id="settings-overlay" class="overlay">
+            <div class="overlay-card settings-card">
+                <div class="settings-header">
+                    <h2>Configuration</h2>
+                    <button id="close-settings-btn" class="icon-btn-close" aria-label="Close settings">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+                    </button>
+                </div>
+
+                <div class="settings-content">
+                    <!-- Operation Choices & Max Limits -->
+                    <section class="settings-section">
+                        <h3>Operations & Limits</h3>
+                        
+                        <div class="settings-grid">
+                            <!-- Addition -->
+                            <div class="setting-row">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="op-add" checked>
+                                    <span class="checkbox-custom"></span>
+                                    <span class="op-symbol">+</span> Addition
+                                </label>
+                                <div class="limit-input-wrapper">
+                                    <label for="limit-add">Max Number:</label>
+                                    <input type="number" id="limit-add" min="5" max="1000" value="20">
+                                </div>
+                            </div>
+
+                            <!-- Subtraction -->
+                            <div class="setting-row">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="op-sub" checked>
+                                    <span class="checkbox-custom"></span>
+                                    <span class="op-symbol">-</span> Subtraction
+                                </label>
+                                <div class="limit-input-wrapper">
+                                    <label for="limit-sub">Max Number:</label>
+                                    <input type="number" id="limit-sub" min="5" max="1000" value="20">
+                                </div>
+                            </div>
+
+                            <!-- Multiplication -->
+                            <div class="setting-row">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="op-mul" checked>
+                                    <span class="checkbox-custom"></span>
+                                    <span class="op-symbol">×</span> Multiplication
+                                </label>
+                                <div class="limit-input-wrapper">
+                                    <label for="limit-mul">Max Number:</label>
+                                    <input type="number" id="limit-mul" min="2" max="100" value="12">
+                                </div>
+                            </div>
+
+                            <!-- Division -->
+                            <div class="setting-row">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="op-div" checked>
+                                    <span class="checkbox-custom"></span>
+                                    <span class="op-symbol">÷</span> Division
+                                </label>
+                                <div class="limit-input-wrapper">
+                                    <label for="limit-div">Max Quotient:</label>
+                                    <input type="number" id="limit-div" min="2" max="100" value="12">
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Focus Table practice -->
+                    <section class="settings-section">
+                        <h3>Focus Mode (Tables)</h3>
+                        <div class="focus-settings">
+                            <label class="switch-container">
+                                <input type="checkbox" id="toggle-focus">
+                                <span class="switch-slider"></span>
+                                <span>Focus on a specific number (e.g., Table of 2)</span>
+                            </label>
+                            <div id="focus-factor-wrapper" class="focus-factor-wrapper disabled">
+                                <label for="focus-factor">Number to practice:</label>
+                                <input type="number" id="focus-factor" min="1" max="100" value="2" disabled>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Timer Duration & Speed Settings -->
+                    <section class="settings-section">
+                        <h3>Game Settings</h3>
+                        
+                        <div class="setting-item-inline">
+                            <label for="setting-timer-duration">Timer Limit per Question (seconds):</label>
+                            <input type="number" id="setting-timer-duration" min="3" max="60" value="10">
+                        </div>
+
+                        <div class="setting-item-inline">
+                            <label for="setting-paper-length">Questions per Paper:</label>
+                            <select id="setting-paper-length">
+                                <option value="5">5 Questions</option>
+                                <option value="10" selected>10 Questions</option>
+                                <option value="20">20 Questions</option>
+                                <option value="50">50 Questions</option>
+                                <option value="0">Endless Mode</option>
+                            </select>
+                        </div>
+
+                        <div class="setting-item-inline">
+                            <label class="switch-container">
+                                <input type="checkbox" id="setting-voice-enabled" checked>
+                                <span class="switch-slider"></span>
+                                <span>Enable Voice Countdown</span>
+                            </label>
+                        </div>
+                    </section>
+                    
+                    <!-- Utility Buttons -->
+                    <div class="settings-footer">
+                        <button id="reset-stats-btn" class="danger-btn">Reset Stats & High Scores</button>
+                        <button id="save-settings-btn" class="primary-btn">Save Configurations</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Paper Completion Overlay -->
+        <div id="paper-complete-overlay" class="overlay">
+            <div class="overlay-card paper-complete-card glow-card">
+                <h2>Paper Completed!</h2>
+                
+                <div class="results-summary">
+                    <div class="result-row">
+                        <span>Total Questions:</span>
+                        <strong id="paper-total-questions">10</strong>
+                    </div>
+                    <div class="result-row">
+                        <span>Correct Answers:</span>
+                        <strong class="text-green" id="paper-correct-answers">8</strong>
+                    </div>
+                    <div class="result-row">
+                        <span>Time Taken:</span>
+                        <strong id="paper-time-taken">45s</strong>
+                    </div>
+                </div>
+                
+                <!-- Large Teacher Grade Circle -->
+                <div class="final-grade-wrapper">
+                    <div class="teacher-grade-circle">
+                        <span id="final-percentage-grade">80/100</span>
+                        <span class="grade-label" id="final-grade-feedback">EXCELLENT!</span>
+                    </div>
+                </div>
+
+                <p id="grade-kids-format-desc" class="grade-desc">You got 80 by 100 correct!</p>
+
+                <div class="welcome-buttons">
+                    <button id="next-paper-btn" class="primary-btn pulse-glow">Start Next Paper</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confetti Canvas -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- JS Logic -->
+    <script src="app.js"></script>
+</body>
+</html>
