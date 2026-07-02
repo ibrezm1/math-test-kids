@@ -707,7 +707,7 @@ function submitMCQAnswer(userVal) {
         sounds.playIncorrect();
         DOM.questionCard.classList.add('incorrect');
         
-        DOM.answerPreview.innerText = `${userVal} ➔ ${state.current.answer}`;
+        DOM.answerPreview.innerHTML = `<span class="feedback-wrong">${userVal}</span> ➔ <span class="feedback-correct">${state.current.answer}</span>`;
         DOM.answerPreview.classList.remove('placeholder');
         
         state.stats.streak = 0;
@@ -963,7 +963,7 @@ function submitAnswer() {
         DOM.questionCard.classList.add('incorrect');
         
         // Show correct answer
-        DOM.answerPreview.innerText = `${state.current.userInput} ➔ ${state.current.answer}`;
+        DOM.answerPreview.innerHTML = `<span class="feedback-wrong">${state.current.userInput}</span> ➔ <span class="feedback-correct">${state.current.answer}</span>`;
         
         state.stats.streak = 0;
         state.stats.total += 1;

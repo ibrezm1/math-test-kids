@@ -1276,3 +1276,16 @@ body {
         font-size: 1.15rem;
     }
 }
+
+/* Question Feedback Colors (e.g. wrong ➔ correct) */
+.feedback-wrong {
+    color: var(--accent-error);
+    text-shadow: 0 0 8px var(--accent-error-glow);
+    font-weight: 800;
+}
+
+.feedback-correct {
+    color: var(--accent-success);
+    text-shadow: 0 0 8px var(--accent-success-glow);
+    font-weight: 800;
+}
